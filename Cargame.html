@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top Down Car Game</title>
+    <style>
+        body {
+            margin: 0;
+            background: #222;
+            overflow: hidden;
+            font-family: Arial;
+        }
+
+        canvas {
+            display: block;
+            margin: auto;
+            background: #555;
+        }
+
+        #info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="info">
+    WASD / Arrow Keys to drive
+</div>
+
+<canvas id="game" width="900" height="600"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const keys = {};
+
+document.addEventListener("keydown", e => {
+    keys[e.key.toLowerCase()] = true;
+});
+
+document.addEventListener("keyup", e => {
+    keys[e.key.toLowerCase()] = false;
+});
+
+const car = {
+    x: 450,
+    y: 300,
+    angle: 0,
+    speed: 0,
+    maxSpeed: 6,
+    acceleration: 0.15,
+    friction: 0.96,
+    turnSpeed: 0.045
+};
+
+const coins = [];
+
+for (let i = 0; i < 20; i++) {
+    coins.push({
+        x: Math.random() * 850 + 25,
+        y: Math.random() * 550 + 25,
+        collected: false
+    });
+}
+
+let score = 0;
+
+function update() {
+
+    // Accelerate
+    if (keys["w"] || keys["arrowup"]) {
+        car.speed += car.acceleration;
+    }
+
+    // Reverse
+    if (keys["s"] || keys["arrowdown"]) {
+        car.speed -= car.acceleration;
+    }
+
+    // Limit speed
+    car.speed = Math.max(
+        -car.maxSpeed / 2,
+        Math.min(car.maxSpeed, car.speed)
+    );
+
+    // Friction
+    if (!keys["w"] &&
+        !keys["arrowup"] &&
+        !keys["s"] &&
+        !keys["arrowdown"]) {
+
+        car.speed *= car.friction;
+    }
+
+    // Steering
+    if (Math.abs(car.speed) > 0.1) {
+
+        if (keys["a"] || keys["arrowleft"]) {
+            car.angle -= car.turnSpeed * (car.speed / car.maxSpeed);
+        }
+
+        if (keys["d"] || keys["arrowright"]) {
+            car.angle += car.turnSpeed * (car.speed / car.maxSpeed);
+        }
+    }
+
+    // Move car
+    car.x += Math.cos(car.angle) * car.speed;
+    car.y += Math.sin(car.angle) * car.speed;
+
+    // Screen boundaries
+    if (car.x < 15) {
+        car.x = 15;
+        car.speed *= -0.5;
+    }
+
+    if (car.x > canvas.width - 15) {
+        car.x = canvas.width - 15;
+        car.speed *= -0.5;
+    }
+
+    if (car.y < 15) {
+        car.y = 15;
+        car.speed *= -0.5;
+    }
+
+    if (car.y > canvas.height - 15) {
+        car.y = canvas.height - 15;
+        car.speed *= -0.5;
+    }
+
+    // Collect coins
+    for (const coin of coins) {
+
+        if (coin.collected)
+            continue;
+
+        const dx = car.x - coin.x;
+        const dy = car.y - coin.y;
+
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 25) {
+            coin.collected = true;
+            score++;
+        }
+    }
+}
+
+function drawRoad() {
+
+    // Grass
+    ctx.fillStyle = "#28752c";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Road
+    ctx.fillStyle = "#444";
+    ctx.fillRect(100, 50, 700, 500);
+
+    // Road lines
+    ctx.strokeStyle = "#ddd";
+    ctx.lineWidth = 4;
+    ctx.setLineDash([30, 30]);
+
+    ctx.beginPath();
+    ctx.moveTo(450, 50);
+    ctx.lineTo(450, 550);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(100, 300);
+    ctx.lineTo(800, 300);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    // Road border
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(100, 50, 700, 500);
+}
+
+function drawCar() {
+
+    ctx.save();
+
+    ctx.translate(car.x, car.y);
+    ctx.rotate(car.angle);
+
+    // Shadow
+    ctx.fillStyle = "rgba(0,0,0,0.3)";
+    ctx.fillRect(-18, -10, 40, 24);
+
+    // Car body
+    ctx.fillStyle = "red";
+    ctx.fillRect(-20, -12, 40, 24);
+
+    // Windows
+    ctx.fillStyle = "#111";
+    ctx.fillRect(-5, -9, 12, 18);
+
+    // Front
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(15, -9, 4, 5);
+    ctx.fillRect(15, 4, 4, 5);
+
+    ctx.restore();
+}
+
+function drawCoins() {
+
+    for (const coin of coins) {
+
+        if (coin.collected)
+            continue;
+
+        ctx.beginPath();
+        ctx.arc(coin.x, coin.y, 9, 0, Math.PI * 2);
+
+        ctx.fillStyle = "gold";
+        ctx.fill();
+
+        ctx.strokeStyle = "#ffb300";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    }
+}
+
+function drawUI() {
+
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+
+    ctx.fillText(
+        "Coins: " + score + " / " + coins.length,
+        20,
+        30
+    );
+
+    ctx.fillText(
+        "Speed: " + Math.round(Math.abs(car.speed) * 20),
+        20,
+        55
+    );
+}
+
+function gameLoop() {
+
+    update();
+
+    drawRoad();
+    drawCoins();
+    drawCar();
+    drawUI();
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>
