@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html lang="sv">
+<!DOCTYPE html> <!-- Deklarerar dokumenttypen som HTML5 -->
+<html lang="sv"> <!-- Anger språket för dokumentet som svenska -->
 <head>
-    <meta charset="UTF-8">
-    <title>Dödskärm</title>
+    <meta charset="UTF-8"> <!-- Anger teckenkodningen som UTF-8 -->
+    <title>Dödskärm</title> <!-- Anger titeln på sidan som "Dödskärm" -->
 
     <style>
         body {
@@ -11,6 +11,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
+        /* Bakgrund, textfärg och typsnitt för sidan */
 
         #highscore-horn {
             position: fixed;
@@ -18,6 +19,7 @@
             right: 20px;
             font-size: 20px;
         }
+        /* Placerar highscore i övre högra hörnet */
 
         #liv {
             position: fixed;
@@ -25,6 +27,7 @@
             left: 20px;
             font-size: 20px;
         }
+        /* Placerar liv i övre vänstra hörnet */
 
         #dodskarm {
             display: none;
@@ -34,44 +37,66 @@
             width: 300px;
             border: 2px solid red;
         }
+        /* Stil för dödskärmen, inklusive bakgrundsfärg,
+           padding, centrering och kant */
 
         button {
             padding: 10px 20px;
             cursor: pointer;
         }
+        /* Stil för knappen, inklusive padding och muspekare */
+
     </style>
 </head>
 <body>
 
     <div id="liv">Liv: 3</div>
+    <!-- Visar antalet liv i övre vänstra hörnet -->
+
     <div id="highscore-horn">Highscore: 0</div>
+    <!-- Visar highscore i övre högra hörnet -->
 
     <div id="dodskarm">
+        <!-- Dödskärmen som visas när spelaren dör, initialt dold -->
+
         <h1>DU DOG!</h1>
+        <!-- Rubrik på dödskärmen -->
+
         <p>Poäng: <span id="slutpoang">0</span></p>
+        <!-- Visar slutpoängen på dödskärmen -->
+
         <p>Highscore: <span id="sluthighscore">0</span></p>
+        <!-- Visar highscore på dödskärmen -->
+
         <button onclick="location.reload()">Spela igen</button>
+        <!-- Knapp som laddar om sidan för att spela igen -->
     </div>
 
     <script>
-        let liv = 3;
-        let poang = 0;
-        let dod = false;
+        let liv = 3;       // Antal liv som spelaren har
+        let poang = 0;     // Antal poäng som spelaren har
+        let dod = false;   // Visar om spelaren är död
 
+        // Hämtar highscore från localStorage.
+        // Om det inte finns något sparat värde används 0.
         let highscore = Number(
             localStorage.getItem("highscore") || 0
         );
 
-        uppdateraHighscore();
+        uppdateraHighscore(); // Uppdaterar highscore på sidan
 
         function kollision() {
-            if (dod) return;
+            // Hanterar kollisioner och minskar antalet liv
 
-            liv--;
+            if (dod) return; // Gör ingenting om spelaren redan är död
 
+            liv--; // Minskar antalet liv med 1
+
+            // Uppdaterar antalet liv på sidan
             document.getElementById("liv").textContent =
                 "Liv: " + liv;
 
+            // Om liv är 0 eller mindre visas dödskärmen
             if (liv <= 0) {
                 dod = true;
                 visaDodskarm();
@@ -79,27 +104,41 @@
         }
 
         function passeratObjekt() {
-            if (dod) return;
+            // Hanterar när spelaren passerar ett objekt
 
-            poang++;
+            if (dod) return; // Gör ingenting om spelaren är död
 
+            poang++; // Ökar poängen med 1
+
+            // Kontrollerar om spelaren har fått ett nytt highscore
             if (poang > highscore) {
                 highscore = poang;
+
+                // Sparar det nya highscore-värdet i webbläsaren
                 localStorage.setItem("highscore", highscore);
             }
 
-            uppdateraHighscore();
+            uppdateraHighscore(); // Uppdaterar highscore på sidan
         }
 
         function uppdateraHighscore() {
+            // Uppdaterar highscore i övre högra hörnet
+
             document.getElementById("highscore-horn").textContent =
                 "Highscore: " + highscore;
         }
 
         function visaDodskarm() {
-            document.getElementById("slutpoang").textContent = poang;
-            document.getElementById("sluthighscore").textContent = highscore;
+            // Visar dödskärmen och uppdaterar poäng och highscore
 
+            // Visar spelarens slutpoäng på dödskärmen
+            document.getElementById("slutpoang").textContent = poang;
+
+            // Visar highscore på dödskärmen
+            document.getElementById("sluthighscore").textContent =
+                highscore;
+
+            // Gör dödskärmen synlig
             document.getElementById("dodskarm").style.display = "block";
         }
     </script>
