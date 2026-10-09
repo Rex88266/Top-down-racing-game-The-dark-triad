@@ -1,11 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dödskärm</title>
+
+    <style>
+        body {
+            background: #222;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #highscore-horn {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            font-size: 20px;
+        }
+
+        #liv {
+            position: fixed;
+            top: 15px;
+            left: 20px;
+            font-size: 20px;
+        }
+
+        #dodskarm {
+            display: none;
+            background: #111;
+            padding: 40px;
+            margin: 100px auto;
+            width: 300px;
+            border: 2px solid red;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <canvas width="600" height="400"> </canvas>
+
+    <div id="liv">Liv: 3</div>
+    <div id="highscore-horn">Highscore: 0</div>
+
+    <div id="dodskarm">
+        <h1>DU DOG!</h1>
+        <p>Poäng: <span id="slutpoang">0</span></p>
+        <p>Highscore: <span id="sluthighscore">0</span></p>
+        <button onclick="location.reload()">Spela igen</button>
+    </div>
+
+    <script>
+        let liv = 3;
+        let poang = 0;
+        let dod = false;
+
+        let highscore = Number(
+            localStorage.getItem("highscore") || 0
+        );
+
+        uppdateraHighscore();
+
+        function kollision() {
+            if (dod) return;
+
+            liv--;
+
+            document.getElementById("liv").textContent =
+                "Liv: " + liv;
+
+            if (liv <= 0) {
+                dod = true;
+                visaDodskarm();
+            }
+        }
+
+        function passeratObjekt() {
+            if (dod) return;
+
+            poang++;
+
+            if (poang > highscore) {
+                highscore = poang;
+                localStorage.setItem("highscore", highscore);
+            }
+
+            uppdateraHighscore();
+        }
+
+        function uppdateraHighscore() {
+            document.getElementById("highscore-horn").textContent =
+                "Highscore: " + highscore;
+        }
+
+        function visaDodskarm() {
+            document.getElementById("slutpoang").textContent = poang;
+            document.getElementById("sluthighscore").textContent = highscore;
+
+            document.getElementById("dodskarm").style.display = "block";
+        }
+    </script>
+
 </body>
 </html>
