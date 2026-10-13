@@ -6,7 +6,7 @@ canvas.height = window.innerHeight;
 
 const destinations = [
     "GÖTEBÖRG",
-    "FROG TOWN",
+    "HOG RIDAAAA",
     "OHIO",
     "GOBLINSVILLE",
     "PENGUIN LAND",
@@ -17,6 +17,10 @@ const destinations = [
     "BANANA REPUBLIC",
     "STENSTÖRP",
     "STEFANS HUS",
+    "SKOVDE",
+    "EPSTEIN'S ISLAND",
+    "THE DIDDY PARTY",
+    "BILTEMA",
 ];
 
 let objects = [];
