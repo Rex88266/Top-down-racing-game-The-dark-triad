@@ -3,10 +3,49 @@
             padding: 0;
         }
 
-        body {
-            overflow: hidden;
-        }
-
         canvas {
             display: block;
         }
+        
+        body {
+            overflow: hidden;
+            background: #222;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+        }
+        /* Bakgrund, textfärg och typsnitt för sidan */
+
+        #liv {
+            position: fixed;
+            top: 15px;
+            left: 20px;
+            font-size: 20px;
+        }
+        /* Placerar liv i övre vänstra hörnet */
+
+        #poang-horn {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            font-size: 20px;
+        }
+
+        #dodskarm {
+            display: none;
+            background: #111;
+            padding: 40px;
+            margin: 100px auto;
+            width: 300px;
+            border: 2px solid red;
+        }
+        /* Stil för dödskärmen, inklusive bakgrundsfärg,
+           padding, centrering och kant */
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        /* Stil för knappen, inklusive padding och muspekare */
+
+    
